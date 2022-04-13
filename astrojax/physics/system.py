@@ -1,10 +1,13 @@
 from dataclasses import dataclass
-from typing import Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
+from astrojax.physics.actuators import Actuator
+from astrojax.physics.forces import Force
 from astrojax.physics.integrator import Integrator
 import jax
 import jax.numpy as jp
 
-from astrojax.state import Pos, PosVel, Vel
+from astrojax.state import Pos, PosVel, TimeDerivatives
+from astrojax import pytree
 
 
 @dataclass
@@ -14,11 +17,12 @@ class SystemConfig:
     num_bodies: int
 
 
+@pytree.register
 class System:
-    def __init__(self, config: SystemConfig) -> None:
+    def __init__(self, config: SystemConfig, actuators: List[Actuator]) -> None:
         self.config = config
         self.integrator = Integrator(self.config.dt)
-        self.actuators = []
+        self.actuators = actuators
         self.forces = []
         self.joints = []
 
@@ -26,7 +30,7 @@ class System:
         def substep(carry, _):
             qp, info = carry
 
-            zero = Vel(jp.zeros((self.config.num_bodies, 3)), jp.zeros((self.config.num_bodies, 3)))
+            zero = TimeDerivatives(jp.zeros((self.config.num_bodies, 3)), jp.zeros((self.config.num_bodies, 3)))
 
             dp_a = sum([a.apply(qp, act) for a in self.actuators], zero)
             dp_f = sum([f.apply(qp, act) for f in self.forces], zero)

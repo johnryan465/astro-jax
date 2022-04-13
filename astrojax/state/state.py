@@ -31,8 +31,8 @@ class Pos(object):
         return (PosVel.zero() + self) + other
 
 
-@ struct.dataclass
-class Vel(object):
+@struct.dataclass
+class TimeDerivatives(object):
     """
     Velocities of some object with respect to some frame.
     """
@@ -46,8 +46,8 @@ class Vel(object):
             ang=jp.zeros(shape + (3,)))
 
     def __add__(self, other):
-        if isinstance(other, Vel):
-            return Vel(
+        if isinstance(other, TimeDerivatives):
+            return TimeDerivatives(
                 vel=self.vel + other.vel,
                 ang=self.ang + other.ang)
         return (PosVel.zero() + self) + other
@@ -81,7 +81,7 @@ class PosVel(object):
                 rot=self.rot + other.rot,
                 vel=self.vel,
                 ang=self.ang)
-        elif isinstance(other, Vel):
+        elif isinstance(other, TimeDerivatives):
             return PosVel(
                 pos=self.pos,
                 rot=self.rot,

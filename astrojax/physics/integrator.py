@@ -3,7 +3,8 @@ from typing import Optional
 
 import jax
 import jax.numpy as jp
-from astrojax.state.state import Pos, PosVel, Vel
+from astrojax.state.state import Pos, PosVel, TimeDerivatives
+from astrojax import pytree
 
 
 def ang_to_quat(ang: jp.ndarray) -> jp.ndarray:
@@ -26,6 +27,7 @@ def quat_mul(u: jp.ndarray, v: jp.ndarray) -> jp.ndarray:
     ])
 
 
+@pytree.register
 class Integrator(ABC):
     """
     We update the state of the system by linearing the update equations
@@ -52,8 +54,8 @@ class Integrator(ABC):
 
     def update(self,
                qp: PosVel,
-               acc_p: Optional[Vel] = None,
-               vel_p: Optional[Vel] = None,
+               acc_p: Optional[TimeDerivatives] = None,
+               vel_p: Optional[TimeDerivatives] = None,
                pos_q: Optional[Pos] = None) -> PosVel:
         """Performs an arg dependent integrator step.
         Args:
