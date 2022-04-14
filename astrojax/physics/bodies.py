@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from astrojax.state.state import PosVel, TimeDerivatives
-import jax.numpy as jp
+import jumpy as jp
 from astrojax import pytree
 
 
@@ -28,7 +28,7 @@ class Body:
 
     def __init__(self, bodies: List[BodyConfig]):
         self.idx = jp.arange(0, len(bodies))
-        self.inertia = 1. / jp.array([b.inertia for b in bodies])
+        self.inertia = jp.inv(jp.array([b.inertia for b in bodies]))
         self.mass = jp.array([b.mass for b in bodies])
         self.active = jp.array([0.0 if b.frozen else 1.0 for b in bodies])
         self.index = {b.name: i for i, b in enumerate(bodies)}

@@ -4,8 +4,9 @@ from astrojax.physics.bodies import Body
 from astrojax.physics.forces import Force
 from astrojax.state import PosVel
 from astrojax.state import TimeDerivatives
-import jax
-import jax.numpy as jp
+
+import jumpy as jp
+
 from astrojax import pytree
 from typing import List, Tuple
 from abc import ABC
@@ -40,10 +41,10 @@ class Thruster(Actuator):
         """
 
         force_data = jp.take(force_data, self.act_index)
-        dvel, dang = jax.vmap(type(self).apply_reduced)(self, force_data)
+        dvel, dang = jp.vmap(type(self).apply_reduced)(self, force_data)
 
         # sum together all impulse contributions to all parts effected by forces
-        dvel = jax.ops.segment_sum(dvel, self.body.idx, qp.pos.shape[0])
-        dang = jax.ops.segment_sum(dang, self.body.idx, qp.pos.shape[0])
+        dvel = jp.segment_sum(dvel, self.body.idx, qp.pos.shape[0])
+        dang = jp.segment_sum(dang, self.body.idx, qp.pos.shape[0])
 
         return TimeDerivatives(vel=dvel, ang=dang)

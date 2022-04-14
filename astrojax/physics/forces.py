@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 from astrojax import pytree
-import jax.numpy as jp
+import jumpy as jp
 import jax
 
 from astrojax.state import TimeDerivatives

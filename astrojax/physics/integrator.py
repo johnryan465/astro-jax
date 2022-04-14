@@ -2,12 +2,13 @@ from abc import ABC
 from typing import Optional
 
 import jax
-import jax.numpy as jp
+import jumpy as jp
 from astrojax.state.state import Pos, PosVel, TimeDerivatives
 from astrojax import pytree
 
 
 def ang_to_quat(ang: jp.ndarray) -> jp.ndarray:
+    print(ang)
     return jp.array([0, ang[0], ang[1], ang[2]])
 
 
@@ -28,7 +29,7 @@ def quat_mul(u: jp.ndarray, v: jp.ndarray) -> jp.ndarray:
 
 
 @pytree.register
-class Integrator(ABC):
+class Integrator:
     """
     We update the state of the system by linearing the update equations
     """
@@ -42,14 +43,13 @@ class Integrator(ABC):
 
     def kinetic(self, qp: PosVel) -> PosVel:
 
-        @jax.vmap
+        @jp.vmap
         def op(qp, pos_mask, rot_mask) -> PosVel:
             pos = qp.pos + qp.vel * self.dt * pos_mask
             rot_at_ang_quat = ang_to_quat(qp.ang * rot_mask) * 0.5 * self.dt
             rot = qp.rot + quat_mul(rot_at_ang_quat, qp.rot)
-            rot = rot / jp.linalg.norm(rot)
+            rot = rot / jp.norm(rot)
             return PosVel(rot, pos, qp.vel, qp.ang)
-
         return op(qp, self.pos_mask, self.rot_mask)
 
     def update(self,
@@ -67,21 +67,22 @@ class Integrator(ABC):
           State data advanced by one potential integration step.
         """
 
-        @jax.vmap
+        @jp.vmap
         def op_acc(qp, dp) -> PosVel:
             vel = qp.vel
+
             vel += (dp.vel + self.gravity) * self.dt
             ang = qp.ang
             ang += dp.ang * self.dt
             return PosVel(pos=qp.pos, rot=qp.rot, vel=vel, ang=ang)
 
-        @jax.vmap
+        @jp.vmap
         def op_vel(qp, dp) -> PosVel:
             vel = (qp.vel + dp.vel)
             ang = (qp.ang + dp.ang)
             return PosVel(pos=qp.pos, rot=qp.rot, vel=vel, ang=ang)
 
-        @jax.vmap
+        @jp.vmap
         def op_pos(qp, dq) -> PosVel:
             qp = PosVel(
                 pos=qp.pos + dq.pos,

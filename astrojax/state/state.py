@@ -1,6 +1,6 @@
 from flax import struct
 from abc import ABC
-import jax.numpy as jp
+import jumpy as jp
 
 
 class State(ABC):

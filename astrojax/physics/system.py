@@ -3,8 +3,7 @@ from typing import List, Optional, Sequence, Tuple
 from astrojax.physics.actuators import Actuator
 from astrojax.physics.forces import Force
 from astrojax.physics.integrator import Integrator
-import jax
-import jax.numpy as jp
+import jumpy as jp
 
 from astrojax.state import Pos, PosVel, TimeDerivatives
 from astrojax import pytree
@@ -30,7 +29,7 @@ class System:
         def substep(carry, _):
             qp, info = carry
 
-            zero = TimeDerivatives(jp.zeros((self.config.num_bodies, 3)), jp.zeros((self.config.num_bodies, 3)))
+            zero = TimeDerivatives.zero(shape=(self.config.num_bodies,))
 
             dp_a = sum([a.apply(qp, act) for a in self.actuators], zero)
             dp_f = sum([f.apply(qp, act) for f in self.forces], zero)
@@ -41,7 +40,7 @@ class System:
             return (qp, info), ()
         info = 0
 
-        (state, info), _ = jax.lax.scan(
+        (state, info), _ = jp.scan(
             substep,
             (state, info),
             (),
