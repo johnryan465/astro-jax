@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple
 from astrojax.physics.actuators import Actuator
-from astrojax.physics.forces import Force
+from astrojax.physics.forces import ForceConfig
+from astrojax.physics.forces.forces import Force
 from astrojax.physics.integrator import Integrator
 import jumpy as jp
 
@@ -18,12 +19,11 @@ class SystemConfig:
 
 @pytree.register
 class System:
-    def __init__(self, config: SystemConfig, actuators: List[Actuator]) -> None:
+    def __init__(self, config: SystemConfig, actuators: List[Actuator], forces: List[Force]) -> None:
         self.config = config
         self.integrator = Integrator(self.config.dt)
         self.actuators = actuators
-        self.forces = []
-        self.joints = []
+        self.forces = forces
 
     def step(self, state: PosVel, act: jp.ndarray) -> PosVel:
         def substep(carry, _):
@@ -32,9 +32,8 @@ class System:
             zero = TimeDerivatives.zero(shape=(self.config.num_bodies,))
 
             dp_a = sum([a.apply(qp, act) for a in self.actuators], zero)
-            dp_f = sum([f.apply(qp, act) for f in self.forces], zero)
-            dp_j = sum([j.damp(qp) for j in self.joints], zero)
-            qp = self.integrator.update(qp, acc_p=dp_a + dp_f + dp_j)
+            dp_f = sum([f.apply(qp) for f in self.forces], zero)
+            qp = self.integrator.update(qp, acc_p=dp_a + dp_f)
 
             qp = self.integrator.kinetic(qp)
             return (qp, info), ()
@@ -44,5 +43,5 @@ class System:
             substep,
             (state, info),
             (),
-            self.config.substeps // 2)
+            self.config.substeps)
         return state

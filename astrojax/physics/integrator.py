@@ -36,7 +36,6 @@ class Integrator:
 
     def __init__(self, dt: float):
         self.dt = dt
-        self.gravity = jp.array([0, 0, -9.81])
         self.pos_mask = 1. * jp.logical_not(jp.zeros((1, 3,)))
         self.rot_mask = 1. * jp.logical_not(jp.zeros((1, 3,)))
         self.quat_mask = 1. * jp.logical_not(jp.zeros((1, 4,)))
@@ -70,8 +69,7 @@ class Integrator:
         @jp.vmap
         def op_acc(qp, dp) -> PosVel:
             vel = qp.vel
-
-            vel += (dp.vel + self.gravity) * self.dt
+            vel += dp.vel * self.dt
             ang = qp.ang
             ang += dp.ang * self.dt
             return PosVel(pos=qp.pos, rot=qp.rot, vel=vel, ang=ang)

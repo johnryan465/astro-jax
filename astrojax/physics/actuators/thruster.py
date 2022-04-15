@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from astrojax.physics.actuators.actuators import Actuator
 
 from astrojax.physics.bodies import Body
-from astrojax.physics.forces import Force
+from astrojax.physics.forces import ForceConfig
 from astrojax.state import PosVel
 from astrojax.state import TimeDerivatives
 
@@ -12,17 +13,11 @@ from typing import List, Tuple
 from abc import ABC
 
 
-class Actuator(ABC):
-    @abstractmethod
-    def apply(self, state: PosVel, force_data: jp.ndarray) -> TimeDerivatives:
-        pass
-
-
 @pytree.register
 class Thruster(Actuator):
-    """Applies a force to a body."""
+    """Applies a thrust to a body."""
 
-    def __init__(self, forces: List[Force], body: Body, act_index: List[Tuple[int, int]]):
+    def __init__(self, forces: List[ForceConfig], body: Body, act_index: List[Tuple[int, int]]):
         self.body = jp.take(body, [body.index[f.body] for f in forces])
         self.strength = jp.array([f.strength for f in forces])
         self.act_index = jp.array(act_index)
