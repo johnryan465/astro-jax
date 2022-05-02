@@ -12,7 +12,7 @@ from astrojax.state.state import PosVel, TimeDerivatives, Pos
 import jumpy as jp
 
 
-num_bodies = 1
+num_bodies = 2
 config = SystemConfig(dt=0.01, substeps=2, num_bodies=num_bodies)
 force = ForceConfig(strength=jp.ones(shape=(3)), body="spaceship")
 body = Body([
@@ -21,12 +21,19 @@ body = Body([
         inertia=jp.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
         name="spaceship",
         frozen=False
+    ),
+    BodyConfig(
+        mass=1.0,
+        inertia=jp.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]),
+        name="earth",
+        frozen=False
     )
 ])
 thruster = Thruster([force], body, [(0, 1, 2)])
 gravity = Gravity()
 system = System(config, [], [gravity])
 state = PosVel.zero(shape=(num_bodies,))
+print(state)
 print(system.step(state=state, act=jp.ones((3, ))))
 
 # %%
@@ -45,9 +52,9 @@ plt.plot([s.pos[0][0] for s in states])
 # %%
 # %matplotlib widget
 
-x = [s.vel[0][0] for s in states]
-y = [s.vel[0][1] for s in states]
-z = [s.vel[0][2] for s in states]
+x = [s.vel[1][0] for s in states]
+y = [s.vel[1][1] for s in states]
+z = [s.vel[1][2] for s in states]
 
 
 # Configure Plotly to be rendered inline in the notebook.
@@ -76,4 +83,6 @@ plot_figure = go.Figure(data=data, layout=layout)
 
 # Render the plot.
 plotly.offline.iplot(plot_figure)
+# %%
+
 # %%

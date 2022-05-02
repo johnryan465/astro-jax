@@ -16,7 +16,8 @@ class BodyConfig:
 
 @pytree.register
 class Body:
-    """A body is a solid, non-deformable object with some mass and shape.
+    """
+    A body is a solid, non-deformable object with some mass and shape.
     Attributes:
       idx: Index of where body is found in the system.
       inertia: (3, 3) Inverse Inertia matrix represented in body frame.

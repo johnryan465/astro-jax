@@ -1,0 +1,14 @@
+name: astro
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - jax
+  - ipykernel
+  - matplotlib
+  - plotly
+  - flax
+  - nbformat
+  - pip:
+    - brax-jumpy
