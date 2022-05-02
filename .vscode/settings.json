@@ -1,5 +1,12 @@
 {
     "cSpell.words": [
         "pytree"
-    ]
+    ],
+    "files.exclude": {
+        "**.pyc": true,
+        "**egg-info**": true,
+        ".pytest_cache/**/*": true,
+        "**__pycache__**": true,
+        "**vscode/*": true
+    }
 }

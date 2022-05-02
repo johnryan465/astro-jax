@@ -4,7 +4,7 @@ from typing import Optional
 import jax
 import jumpy as jp
 from astrojax.state.state import Pos, PosVel, TimeDerivatives
-from astrojax import pytree
+from brax import pytree
 
 
 def ang_to_quat(ang: jp.ndarray) -> jp.ndarray:

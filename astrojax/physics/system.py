@@ -7,7 +7,7 @@ from astrojax.physics.integrator import Integrator
 import jumpy as jp
 
 from astrojax.state import Pos, PosVel, TimeDerivatives
-from astrojax import pytree
+from brax import pytree
 
 
 @dataclass
@@ -32,16 +32,13 @@ class System:
         self.forces = forces
 
     def step(self, state: PosVel, act: jp.ndarray) -> PosVel:
-        print(state)
         def substep(carry, _):
             qp, info = carry
 
             zero = TimeDerivatives.zero(shape=(self.config.num_bodies,))
-            print(zero)
 
             dp_a = sum([a.apply(qp, act) for a in self.actuators], zero)
             dp_f = sum([f.apply(qp) for f in self.forces], zero)
-            print(dp_a, dp_f)
             qp = self.integrator.update(qp, acc_p=dp_a + dp_f)
 
             qp = self.integrator.kinetic(qp)
@@ -53,5 +50,4 @@ class System:
             (state, info),
             (),
             self.config.substeps)
-        print(state)
         return state

@@ -3,7 +3,7 @@ from typing import List
 
 from astrojax.state.state import PosVel, TimeDerivatives
 import jumpy as jp
-from astrojax import pytree
+from brax import pytree
 
 
 @dataclass

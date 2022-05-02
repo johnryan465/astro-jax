@@ -8,7 +8,7 @@ from astrojax.state import TimeDerivatives
 
 import jumpy as jp
 
-from astrojax import pytree
+from brax import pytree
 from typing import List, Tuple
 from abc import ABC
 
