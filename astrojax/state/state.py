@@ -1,6 +1,8 @@
+from typing import Tuple
 from flax import struct
 from abc import ABC
 import jumpy as jp
+from brax import math
 
 
 class State(ABC):
@@ -88,3 +90,23 @@ class PosVel(object):
                 vel=self.vel + other.vel,
                 ang=self.ang + other.ang)
         raise NotImplementedError
+
+    def to_world(self, rpos: jp.ndarray) -> Tuple[jp.ndarray, jp.ndarray]:
+        """Returns world information about a point relative to a part.
+        Args:
+        rpos: Point relative to center of mass of part.
+        Returns:
+        A 2-tuple containing:
+            * World-space coordinates of rpos
+            * World-space velocity of rpos
+        """
+        rpos_off = math.rotate(rpos, self.rot)
+        rvel = jp.cross(self.ang, rpos_off)
+        return (self.pos + rpos_off, self.vel + rvel)
+
+    def world_velocity(self, pos: jp.ndarray) -> jp.ndarray:
+        """Returns the velocity of the point on a rigidbody in world space.
+        Args:
+        pos: World space position which to use for velocity calculation.
+        """
+        return self.vel + jp.cross(self.ang, pos - self.pos)

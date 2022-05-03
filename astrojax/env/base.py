@@ -1,5 +1,15 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class Env(ABC):
-  """API for driving a brax system for training and inference."""
+    @abstractmethod
+    def reset(self) -> None:
+        pass
+    
+    @abstractmethod
+    def step(self, action: float) -> None:
+        pass
+
+    @abstractmethod
+    def draw(self) -> None:
+        pass

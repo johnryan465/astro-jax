@@ -8,7 +8,6 @@ from brax import pytree
 
 
 def ang_to_quat(ang: jp.ndarray) -> jp.ndarray:
-    print(ang)
     return jp.array([0, ang[0], ang[1], ang[2]])
 
 
@@ -34,11 +33,11 @@ class Integrator:
     We update the state of the system by linearing the update equations
     """
 
-    def __init__(self, dt: float):
+    def __init__(self, dt: float, num_bodies: int):
         self.dt = dt
-        self.pos_mask = 1. * jp.logical_not(jp.zeros((1, 3,)))
-        self.rot_mask = 1. * jp.logical_not(jp.zeros((1, 3,)))
-        self.quat_mask = 1. * jp.logical_not(jp.zeros((1, 4,)))
+        self.pos_mask = 1. * jp.logical_not(jp.zeros((num_bodies, 3,)))
+        self.rot_mask = 1. * jp.logical_not(jp.zeros((num_bodies, 3,)))
+        self.quat_mask = 1. * jp.logical_not(jp.zeros((num_bodies, 4,)))
 
     def kinetic(self, qp: PosVel) -> PosVel:
 
