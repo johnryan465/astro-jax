@@ -14,7 +14,7 @@ print(env.state)
 # %%
 
 states = []
-for i in range(1000):
+for i in range(100):
     states.append(env.state)
     state = env.step(action=jp.ones((3, )))
 

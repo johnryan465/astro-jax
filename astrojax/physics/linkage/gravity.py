@@ -19,7 +19,7 @@ class GravityLinkageConfig:
     child_idx: int
     parent_mass: float
     child_mass: float
-    gravity_coeff: float = 6.67430*(1e-11)
+    gravity_coeff: float = 1 # 6.67430*(1e-11)
 
 
 
